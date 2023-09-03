@@ -1,1 +1,3 @@
 # EggForm
+
+Formalization of EggLog.
