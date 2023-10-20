@@ -8,6 +8,8 @@ abbrev FunctionSymbol : Type := String
 inductive Constant : Type
   | c : C → Constant
   | n : N → Constant
+ 
+notation "⊥" => Constant.c (0 : Nat)
 
 inductive BasePattern : Type
   | c : Constant → BasePattern

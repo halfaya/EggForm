@@ -5,22 +5,22 @@ namespace Semantics
 
 open Syntax
 
-inductive FunctionType : Type
-  | C : FunctionType
-  | N : FunctionType
+inductive ArgumentType : Type
+  | C : ArgumentType
+  | N : ArgumentType
   deriving BEq
 
 structure Signature where
   sig::
-  i : List FunctionType -- input types
-  o : FunctionType      -- output type
+  i : List ArgumentType -- input types
+  o : ArgumentType      -- output type
   deriving BEq
 
 def Schema : Type := Std.HashMap String Signature
 
-def constToType : Constant → FunctionType
-  | Constant.c _ => FunctionType.C
-  | Constant.n _ => FunctionType.N
+def constToType : Constant → ArgumentType
+  | Constant.c _ => ArgumentType.C
+  | Constant.n _ => ArgumentType.N
 
 def getSignature : FunctionO Constant Constant → Signature
   | FunctionO.f (Function.f _ ins) out =>
