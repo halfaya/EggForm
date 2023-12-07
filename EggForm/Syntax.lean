@@ -1,52 +1,55 @@
 namespace Syntax
 
 def C : Type := Nat -- interpreted constant
+  deriving BEq
+
 def N : Type := Nat -- uninterpreted constant
+  deriving BEq
+
+instance : Add N where
+  add := Nat.add
+
+instance : OfNat N n where
+  ofNat := n
+
+def nextN (n: N) : N := n + 1
+
 def Variable : Type := Nat
 abbrev FunctionSymbol : Type := String
 
 inductive Constant : Type
   | c : C → Constant
   | n : N → Constant
- 
+  deriving BEq
+
 notation "⊥" => Constant.c (0 : Nat)
+
+abbrev ConstantFunction : Type := FunctionSymbol × List Constant
+abbrev ConstantFunctionO : Type := ConstantFunction × Constant -- constant function with constant output
 
 inductive BasePattern : Type
   | c : Constant → BasePattern
   | v : Variable → BasePattern
 
-inductive Function (T : Type) : Type
-  | f : FunctionSymbol → List T → Function T
-
-def functionName : {T : Type} → Function T → FunctionSymbol
-  | _, (Function.f name _) => name
-
--- function with output
-inductive FunctionO (T : Type) (O : Type) : Type
-  | f : Function T → O → FunctionO T O
-
-def functionOName : {T O : Type} → FunctionO T O → FunctionSymbol
-  | _, _, (FunctionO.f f _) => functionName f
-
 inductive Term : Type -- also called ground term
   | c : Constant → Term
-  | f : Function Term → Term
+  | f : FunctionSymbol → List Term → Term
+  deriving BEq
 
 inductive Pattern : Type
   | b : BasePattern → Pattern
-  | f : Function Pattern → Pattern
+  | f : FunctionSymbol → List Pattern → Pattern
 
 inductive Atom : Type
-  | f : Function Pattern → Atom
-  | b : FunctionO Pattern BasePattern → Atom
+  | f : FunctionSymbol → List Pattern → Atom
+  | b : FunctionSymbol → List Pattern → BasePattern → Atom
 
 inductive GroundAtom : Type
-  | f : Function Term → GroundAtom
-  | b : FunctionO Term Constant → GroundAtom
+  | t : Term → GroundAtom
+  | b : FunctionSymbol → List Term → Constant → GroundAtom
 
 inductive Rule : Type
   | rule : Atom → List Atom → Rule
 
 inductive Program : Type
   | program : List Rule → Program
-
